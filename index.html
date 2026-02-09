@@ -29,8 +29,14 @@
     h1 {
       font-size: 2rem;
       color: white;
-      margin-bottom: 30px;
+      margin: 0 0 12px;
       text-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+
+    .hint {
+      color: rgba(255,255,255,0.92);
+      font-size: 1rem;
+      margin: 0 0 22px;
     }
 
     .buttons {
@@ -38,7 +44,6 @@
       justify-content: center;
       align-items: center;
       gap: 16px;
-      position: relative;
       min-height: 60px;
     }
 
@@ -50,7 +55,7 @@
       border: none;
       cursor: pointer;
       box-shadow: 0 10px 25px rgba(0,0,0,0.12);
-      transition: transform 0.12s ease;
+      transition: transform 0.12s ease, filter 0.12s ease, opacity 0.12s ease;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
@@ -58,7 +63,15 @@
     #yesBtn {
       background: #ff4d6d;
       color: white;
-      display: none; /* ✅ hidden at first */
+      opacity: 0.55;            /* looks “locked” */
+      filter: grayscale(0.15);
+      cursor: not-allowed;
+    }
+
+    #yesBtn.unlocked {
+      opacity: 1;
+      filter: none;
+      cursor: pointer;
     }
 
     #noBtn {
@@ -66,7 +79,6 @@
       color: #ff4d6d;
     }
 
-    /* Hearts on final page */
     @keyframes floatUp {
       0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
       100% { transform: translateY(-520px) rotate(360deg); opacity: 0; }
@@ -85,6 +97,7 @@
 <body>
   <div class="card">
     <h1>Will you be my Valentine? 💘</h1>
+    <p class="hint" id="hint">Try pressing <b>No</b> first 😏</p>
 
     <div class="buttons">
       <button id="yesBtn">Yes 💖</button>
@@ -95,21 +108,25 @@
   <script>
     const noBtn = document.getElementById("noBtn");
     const yesBtn = document.getElementById("yesBtn");
+    const hint = document.getElementById("hint");
 
-    let triedNo = false;
+    let unlocked = false;
+
+    function unlockYes() {
+      if (unlocked) return;
+      unlocked = true;
+      yesBtn.classList.add("unlocked");
+      hint.textContent = "Okay okay… now you can choose 😌";
+      setTimeout(() => hint.remove(), 1200);
+    }
 
     function moveNoDesperate() {
-      // Make YES appear the first time they attempt NO
-      if (!triedNo) {
-        triedNo = true;
-        yesBtn.style.display = "inline-block";
-      }
+      unlockYes();
 
-      // Teleport NO anywhere in the viewport
       const vw = window.innerWidth;
       const vh = window.innerHeight;
 
-      const padding = 12; // keep it from going off-screen
+      const padding = 14;
       const maxX = Math.max(padding, vw - noBtn.offsetWidth - padding);
       const maxY = Math.max(padding, vh - noBtn.offsetHeight - padding);
 
@@ -121,13 +138,13 @@
       noBtn.style.top = `${randomY}px`;
     }
 
-    // Panic triggers: before click can land
+    // Make NO teleport BEFORE they can click it
     noBtn.addEventListener("pointerdown", (e) => { e.preventDefault(); moveNoDesperate(); });
     noBtn.addEventListener("pointerover", moveNoDesperate);
     noBtn.addEventListener("touchstart", (e) => { e.preventDefault(); moveNoDesperate(); }, { passive: false });
 
     yesBtn.addEventListener("click", () => {
-      if (!triedNo) return;
+      if (!unlocked) return;
 
       document.body.innerHTML = `
         <div style="
@@ -154,7 +171,6 @@
         </div>
       `;
 
-      // Floating hearts
       const hearts = ["❤️","💖","💗","💘","💕"];
       for (let i = 0; i < 34; i++) {
         const h = document.createElement("div");
@@ -170,4 +186,3 @@
   </script>
 </body>
 </html>
-
