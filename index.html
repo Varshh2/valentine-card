@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Valentine 💘</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      width: 100vw;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .card {
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: white;
+      margin-bottom: 40px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      position: relative;
+      height: 80px;
+    }
+
+    button {
+      width: 140px;
+      height: 50px;
+      font-size: 1.1rem;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.05s ease;
+    }
+
+    #yesBtn {
+      background: #ff4d6d;
+      color: white;
+    }
+
+    #noBtn {
+      background: white;
+      color: #ff4d6d;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    /* Hearts on final page */
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg); opacity:1;}
+      100% { transform: translateY(-500px) rotate(360deg); opacity:0;}
+    }
+
+    .heart {
+      position: absolute;
+      font-size: 2rem;
+      animation: float 4s linear infinite;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h1>Will you be my Valentine? 💘</h1>
+    <div class="buttons">
+      <button id="yesBtn">Yes 💖</button>
+      <button id="noBtn">No 🙃</button>
+    </div>
+  </div>
+
+  <script>
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+
+    let triedNo = false;
+
+    yesBtn.disabled = true;
+
+    function moveNoDesperate() {
+      // full viewport dimensions
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      // new random position
+      const randomX = Math.random() * (vw - noBtn.offsetWidth);
+      const randomY = Math.random() * (vh - noBtn.offsetHeight);
+
+      noBtn.style.position = "fixed"; // detach from container
+      noBtn.style.left = `${randomX}px`;
+      noBtn.style.top = `${randomY}px`;
+
+      if (!triedNo) {
+        triedNo = true;
+        yesBtn.disabled = false;
+      }
+    }
+
+    // Trigger panic on any attempt
+    noBtn.addEventListener("pointerover", moveNoDesperate);
+    noBtn.addEventListener("touchstart", moveNoDesperate);
+
+    yesBtn.addEventListener("click", () => {
+      if (!triedNo) return;
+
+      document.body.innerHTML = `
+        <div style="
+          position: relative;
+          height: 100vh;
+          width: 100vw;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          background: radial-gradient(circle, #ff758c, #ff7eb3);
+          color: white;
+          font-family: Arial;
+          text-align: center;
+          overflow: hidden;
+        ">
+          <h1 style="font-size:3rem; margin-bottom:20px;">Best choice ever! 💕🥰</h1>
+          <p style="font-size:1.5rem;">You just made my day 💖</p>
+        </div>
+      `;
+
+      // floating hearts
+      const colors = ['#ff4d6d','#ff75a0','#ff9acc','#ffffff'];
+      for(let i=0;i<30;i++){
+        const heart = document.createElement('div');
+        heart.className = 'heart';
+        heart.style.left = Math.random()*100 + 'vw';
+        heart.style.fontSize = (20 + Math.random()*30) + 'px';
+        heart.style.color = colors[Math.floor(Math.random()*colors.length)];
+        heart.style.animationDuration = (3 + Math.random()*3) + 's';
+        heart.innerHTML = '❤️';
+        document.body.appendChild(heart);
+      }
+    });
+  </script>
+
+</body>
+</html>
